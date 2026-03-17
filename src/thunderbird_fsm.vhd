@@ -97,6 +97,7 @@ end thunderbird_fsm;
 architecture thunderbird_fsm_arch of thunderbird_fsm is 
 
 -- CONSTANTS ------------------------------------------------------------------
+    signal slow_clk : std_logic := '0';
     signal f_Q : std_logic_vector(7 downto 0) := "00000000";
 	signal f_Q_next : std_logic_vector(7 downto 0) := "00000000";
   
@@ -119,16 +120,16 @@ begin
     with f_Q select
         o_lights_L <= "000" when "10000000",
                       "111" when "01000000",
-                      "001" when "00000100",
-                      "011" when "00000010",
+                      "100" when "00000100",
+                      "110" when "00000010",
                       "111" when "00000001",
                       "000" when others;
         
     with f_Q select  
         o_lights_R <= "000" when "10000000",
                       "111" when "01000000",
-                      "001" when "00100000",
-                      "011" when "00010000",
+                      "100" when "00100000",
+                      "110" when "00010000",
                       "111" when "00001000",
                       "000" when others;
 	
