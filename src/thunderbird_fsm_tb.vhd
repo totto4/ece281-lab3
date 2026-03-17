@@ -141,17 +141,17 @@ begin
 
         -- R States
         w_right <= '1'; w_left <= '0'; wait for k_clk_period;
-          assert w_lights_R = "100" report "R1: only one right light should be on" severity failure;
+          assert w_lights_R = "001" report "R1: only one right light should be on" severity failure;
         wait for k_clk_period; -- time to go to R2
-            assert w_lights_R = "110" report "R:2 did not go R2 after R1" severity failure;
+            assert w_lights_R = "011" report "R:2 did not go R2 after R1" severity failure;
         wait for k_clk_period; -- time to go to R3
             assert w_lights_R = "111" report "R:3 did not go R3 after R2" severity failure;
         -- L States
         w_left <= '0'; w_right <= '0'; wait for k_clk_period;
         w_left <= '1'; w_right <= '0'; wait for k_clk_period;
-          assert w_lights_L = "100" report "L1: only one left light should be on" severity failure;
+          assert w_lights_L = "001" report "L1: only one left light should be on" severity failure;
         wait for k_clk_period; -- time to go to L2
-            assert w_lights_L = "110" report "L2: did not go L2 after L1" severity failure;
+            assert w_lights_L = "011" report "L2: did not go L2 after L1" severity failure;
         wait for k_clk_period; -- time to go to L3
             assert w_lights_L = "111" report "L3: did not go L3 after L1" severity failure;
         
