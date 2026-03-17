@@ -121,9 +121,9 @@ begin
           o_lights_L(2) => led(15),
           o_lights_L(1) => led(14),
           o_lights_L(0) => led(13),
-          o_lights_R(2) => led(2),
+          o_lights_R(2) => led(0),
           o_lights_R(1) => led(1),
-          o_lights_R(0) => led(0)
+          o_lights_R(0) => led(2)
           );
 	
 	clock_inst : clock_divider
