@@ -80,7 +80,10 @@ architecture test_bench of thunderbird_fsm_tb is
 	constant k_clk_period : time := 10 ns;
 	
 	-- constants
-	
+	-- Setup clk
+	signal reset, slow_clk	: std_logic	:= '0';	
+	-- Set clk divide amount here
+	constant k_clock_divs	: natural	:= 10;
 	
 begin
 	-- PORT MAPS ----------------------------------------

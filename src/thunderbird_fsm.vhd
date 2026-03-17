@@ -116,13 +116,21 @@ begin
     f_Q_next(0) <= (f_Q(1));    
     
     --Output Logic
-    o_lights_L(0) <= (f_Q(2) or f_Q(1) or f_Q(0) or f_Q(6));
-    o_lights_L(1) <= (f_Q(1) or f_Q(0) or f_Q(6));
-    o_lights_L(2) <= (f_Q(0) or f_Q(6));
-
-    o_lights_R(0) <= (f_Q(5) or f_Q(4) or f_Q(3) or f_Q(6));
-    o_lights_R(1) <= (f_Q(4) or f_Q(3) or f_Q(6));
-    o_lights_R(2) <= (f_Q(3) or f_Q(6));
+    with f_Q select
+        o_lights_L <= "000" when "10000000",
+                      "111" when "01000000",
+                      "001" when "00000100",
+                      "011" when "00000010",
+                      "111" when "00000001",
+                      "000" when others;
+        
+    with f_Q select  
+        o_lights_R <= "000" when "10000000",
+                      "111" when "01000000",
+                      "001" when "00100000",
+                      "011" when "00010000",
+                      "111" when "00001000",
+                      "000" when others;
 	
 	-- PROCESSES --------------------------------------------------------------------
 	register_proc : process (i_clk, i_reset)
