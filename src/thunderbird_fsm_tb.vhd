@@ -57,28 +57,103 @@ end thunderbird_fsm_tb;
 architecture test_bench of thunderbird_fsm_tb is 
 	
 	component thunderbird_fsm is 
---	  port(
-		
---	  );
+	  port(
+	       i_clk, i_reset  : in    std_logic;
+           i_left, i_right : in    std_logic;
+           o_lights_L      : out   std_logic_vector(2 downto 0);
+           o_lights_R      : out   std_logic_vector(2 downto 0)
+	  );
 	end component thunderbird_fsm;
 
 	-- test I/O signals
+	--Inputs
+	signal w_left : std_logic := '0';
+	signal w_right : std_logic := '0';
+	signal w_reset : std_logic := '0';
+	signal w_clk : std_logic := '0';
+	
+	--Outputs
+	signal w_lights_L : std_logic_vector(2 downto 0) := "000";
+	signal w_lights_R : std_logic_vector(2 downto 0) := "000";
+		
+	-- Clock period definitions
+	constant k_clk_period : time := 10 ns;
 	
 	-- constants
 	
 	
 begin
 	-- PORT MAPS ----------------------------------------
+	-- Instantiate the Unit Under Test (UUT)
+   uut: thunderbird_fsm port map (
+          i_left => w_left,
+          i_right => w_right,
+          i_reset => w_reset,
+          i_clk => w_clk,
+          o_lights_L(2) => w_lights_L(2),
+          o_lights_L(1) => w_lights_L(1),
+          o_lights_L(0) => w_lights_L(0),
+          o_lights_R(2) => w_lights_R(2),
+          o_lights_R(1) => w_lights_R(1),
+          o_lights_R(0) => w_lights_R(0)
+        );
 	
 	-----------------------------------------------------
 	
 	-- PROCESSES ----------------------------------------	
     -- Clock process ------------------------------------
-    
+    clk_proc : process
+	begin
+		w_clk <= '0';
+        wait for k_clk_period/2;
+		w_clk <= '1';
+		wait for k_clk_period/2;
+	end process;
 	-----------------------------------------------------
 	
 	-- Test Plan Process --------------------------------
-	
+	-- Use 220 ns for simulation
+	sim_proc: process
+	begin
+		-- sequential timing		
+		w_reset <= '1';
+		wait for k_clk_period;
+		  assert w_lights_R = "000" report "Right: bad reset, should be all on" severity failure; -- Testing reset, all lights should come on
+		  assert w_lights_L = "000" report "Left: bad reset, should be all on" severity failure;
+		
+		w_reset <= '0';
+		wait for k_clk_period;
+		
+		-- OFF State
+		w_left <= '0'; w_right <= '0'; wait for k_clk_period;
+          assert w_lights_L = "000" and w_lights_R = "000" report "should be off when off state" severity failure;
+        wait for k_clk_period * 3; -- stay on
+          assert w_lights_L = "000" and w_lights_R = "000" report "should be off when off state" severity failure;
+          
+		-- ON State
+        w_left <= '1'; w_right <= '1'; wait for k_clk_period;
+          assert w_lights_L = "111" and w_lights_R = "111" report "should be all ON when ON state" severity failure;
+        wait for k_clk_period * 3; -- stay on
+          assert w_lights_L = "000" and w_lights_R = "000" report "should be all OFF after ON state" severity failure;
+
+        -- R States
+        w_right <= '1'; w_left <= '0'; wait for k_clk_period;
+          assert w_lights_R = "001" report "R1: only one right light should be on" severity failure;
+        wait for k_clk_period; -- time to go to R2
+            assert w_lights_R = "011" report "R:2 did not go R2 after R1" severity failure;
+        wait for k_clk_period; -- time to go to R3
+            assert w_lights_R = "111" report "R:3 did not go R3 after R2" severity failure;
+        -- L States
+        w_left <= '0'; w_right <= '0'; wait for k_clk_period;
+        w_left <= '1'; w_right <= '0'; wait for k_clk_period;
+          assert w_lights_L = "001" report "L1: only one left light should be on" severity failure;
+        wait for k_clk_period; -- time to go to L2
+            assert w_lights_L = "011" report "L2: did not go L2 after L1" severity failure;
+        wait for k_clk_period; -- time to go to L3
+            assert w_lights_L = "111" report "L3: did not go L3 after L1" severity failure;
+        
+		wait;
+	end process;
 	-----------------------------------------------------	
 	
 end test_bench;
